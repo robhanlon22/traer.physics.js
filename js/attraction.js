@@ -41,7 +41,7 @@ var Attraction = function (a, b, k, distanceMin) {
   };
 
   that.apply = function () {
-    if (on && (a.isFree() || b.isFree()) {
+    if (on && (a.isFree() || b.isFree())) {
       var a2bX = a.position().x() - b.position().x(),
           a2bY = a.position().y() - b.position().y(),
           a2bZ = a.position().z() - b.position().z(),

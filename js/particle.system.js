@@ -1,11 +1,31 @@
-var ParticleSystem = function ( ) {
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
+// Quick 'n dirty each.
+if (Array.prototype.forEach) {
+  Array.prototype.each = Array.prototype.forEach;
+} else {
+  Array.prototype.each = function (callback) {
+    for (var i = 0, i < this.length, i++) {
+      callback(this[i]);
+    };
+  };
+};
+
+var ParticleSystem = function () {
   var that = {},
       integrator = new RungeKuttaIntegrator(that),
       particles = [],
       springs = [],
       attractions = [],
+      customForces = [],
       gravity = new Vector3D(),
       drag,
+      hasDeadParticles = false,
       err = function (method) {
         throw 'Invalid number of arguments to ' + method + ', bozo';
       };
@@ -39,7 +59,7 @@ var ParticleSystem = function ( ) {
     };
   };
 
-  that.setGravity = function ( ) {
+  that.setGravity = function () {
     switch (arguments.length) { 
       case 1:
         gravity.set(0, arguments[0], 0);
@@ -56,7 +76,7 @@ var ParticleSystem = function ( ) {
     drag = d;
   };
 
-  that.tick = function ( ) {
+  that.tick = function () {
     switch (arguments.length) {
       case 0:
         integrator.step(0);
@@ -69,7 +89,7 @@ var ParticleSystem = function ( ) {
     };
   };
 
-  that.makeParticle = function ( ) {
+  that.makeParticle = function () {
     var mass = 1.0, x = 0, y = 0, z = 0;
     
     switch (arguments.length) {
@@ -89,6 +109,111 @@ var ParticleSystem = function ( ) {
     p.position().set(x, y, z);
     particles.add(p);
     return p;
+  };
+
+  that.makeSpring = function (a, b, ks, d, r) {
+    var s = new Spring(a, b, ks, d, r);
+    springs.push(s);
+    return s;
+  };
+
+  that.clear = function () {
+    particles = [];
+    springs = [];
+    attractions = [];
+  };
+
+  that.makeAttraction = function (a, b, k, minDistance) {
+    var m = new Attraction(a, b, k, minDistance);
+    attractions.push(m);
+    return m;
+  };
+
+  that.applyForces = function () {
+      particles.each(function (particle) {
+        if (!gravity.isZero()) {
+          particle.force().add(gravity);
+        };
+        particle.force().add(p.velocity().x() * -drag,
+                             p.velocity().y() * -drag,
+                             p.velocity().z() * -drag);
+      });
+    };
+    springs.each(function (spring) {
+      spring.apply();
+    });
+    attractions.each(function (attraction) {
+      attraction.apply();
+    });
+    customForces.each(function (customForce) {
+      customForce.apply();
+    });
+  };
+
+  that.clearForces = function () {
+    for (var i = 0; i < particles.length; i++) {
+      particles[i].force().clear();
+    };
+  };
+
+  that.numberOfParticles = function () {
+    return particles.length;
+  };
+
+  that.numberOfSprings = function () {
+    return springs.length;
+  };
+
+  that.numberOfAttractions = function () {
+    return attractions.length;
+  };
+
+  that.getParticle = function (i) {
+    return particles[i];
+  };
+
+  that.getSpring = function (i) {
+    return springs[i];
+  };
+
+  that.getAttraction = function (i) {
+    return attractions[i];
+  };
+
+  that.addCustomForce = function (f) {
+    customForces.push(f);
+  };
+
+  that.numberOfCustomForces = function () {
+    return customForces.length;
+  };
+
+  that.getCustomForce = function (i) {
+    return customForces[i];
+  };
+
+  that.removeParticle = function (i) {
+    var p = that.getParticle(i);
+    particles.remove(i);
+    return p;
+  };
+
+  that.removeSpring = function (i) {
+    var s = that.getSpring(i);
+    springs.remove(i);
+    return s;
+  };
+
+  that.removeAttraction = function (i) {
+    var a = that.getAttraction(i);
+    attractions.remove(i);
+    return a;
+  };
+
+  that.removeCustomForce = function (i) {
+    var f = that.getCustomForce(i);
+    customForces.remove(i);
+    return f;
   };
 
   that.particles = function () {

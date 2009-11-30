@@ -5,21 +5,22 @@ var RungeKuttaIntegrator = function (s) {
         vel: []
       },
       forces = new Array([], [], [], []),
-      velocities = new Array([], [], [], []);
-
-  that.allocateParticles = function () {
-    while (s.particles().length > originals['pos'].length) {
-      for (var item in originals) {
-        originals[item].push(new Vector3D());
+      velocities = new Array([], [], [], []),
+      allocateParticles = function () {
+        while (s.numberOfParticles() > originals['pos'].length) {
+          for (var item in originals) {
+            originals[item].push(new Vector3D());
+          };
+          for (var i = 0; i < forces.length; i++) {
+            forces[i].push(new Vector3D());
+            velocities[i].push(new Vector3D());
+          };
+        };
       };
-      for (var i = 0; i < forces.length; i++) {
-        forces[i].push(new Vector3D());
-        velocities[i].push(new Vector3D());
-      };
-    };
-  };
 
   that.step = function (deltaT) {
+    allocateParticles();
+    
     for (var i = 0; i < s.particles().length; i++) {
       var p = s.particles()[i];
       if (p.isFree()) {
@@ -92,7 +93,7 @@ var RungeKuttaIntegrator = function (s) {
               orVel.y() + dmass * (k1For.y() + 2.0 * k2for.y() +
                                    2.0 * k3For.y() + k4For.y()),
               orVel.z() + dmass * (k1For.z() + 2.0 * k2for.z() +
-                                   2.0 * k3For.z() + k4For.z()),
+                                   2.0 * k3For.z() + k4For.z()));
       };
     };
   };
