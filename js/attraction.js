@@ -82,4 +82,6 @@ var Attraction = function (a, b, k, distanceMin) {
   that.isOff = function () {
     return !on;
   };
+
+  return that;
 };
