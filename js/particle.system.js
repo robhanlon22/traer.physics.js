@@ -90,6 +90,12 @@ var ParticleSystem = function ( ) {
     particles.add(p);
     return p;
   };
+
+  that.particles = function () {
+    return particles;
+  };
+
+  return that;
 };
 
 ParticleSystem.RUNGE_KUTTA = 0;
