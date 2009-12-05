@@ -6,6 +6,15 @@ var Particle = function (mass) {
       age = 0, 
       dead = false,
       fixed = false;
+  
+  that.toString = function () {
+    return "position: " + position +
+           "\n velocity: " + velocity +
+           "\n force: " + force +
+           "\n age: " + age +
+           "\n dead: " + dead +
+           "\n fixed: " + fixed;
+  };
 
   that.distanceTo = function (p) {
     return that.position().distanceTo(p.position());

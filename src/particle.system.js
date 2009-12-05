@@ -10,7 +10,7 @@ if (Array.prototype.forEach) {
   Array.prototype.each = Array.prototype.forEach;
 } else {
   Array.prototype.each = function (callback) {
-    for (var i = 0, i < this.length, i++) {
+    for (var i = 0; i < this.length; i++) {
       callback(this[i]);
     };
   };
@@ -50,10 +50,11 @@ var ParticleSystem = function () {
   that.setIntegrator = function (integrator) {
     switch (integrator) {
       case ParticleSystem.RUNGE_KUTTA:
-        this.integrator = new RungeKuttaIntegrator(that);
+        integrator = new RungeKuttaIntegrator(that);
         break;
       case ParticleSystem.MODIFIED_EULER:
-        this.integrator = new ModifiedEulerIntegrator(that);
+        integrator = new ModifiedEulerIntegrator(that);
+        break;
       default:
         throw 'No such integrator.';
     };
@@ -79,7 +80,7 @@ var ParticleSystem = function () {
   that.tick = function () {
     switch (arguments.length) {
       case 0:
-        integrator.step(0);
+        integrator.step(1);
         break;
       case 1:
         integrator.step(arguments[0]);
@@ -107,7 +108,7 @@ var ParticleSystem = function () {
 
     var p = new Particle(mass);
     p.position().set(x, y, z);
-    particles.add(p);
+    particles.push(p);
     return p;
   };
 
@@ -130,15 +131,14 @@ var ParticleSystem = function () {
   };
 
   that.applyForces = function () {
-      particles.each(function (particle) {
-        if (!gravity.isZero()) {
-          particle.force().add(gravity);
-        };
-        particle.force().add(p.velocity().x() * -drag,
-                             p.velocity().y() * -drag,
-                             p.velocity().z() * -drag);
-      });
-    };
+    particles.each(function (particle) {
+      if (!gravity.isZero()) {
+        particle.force().add(gravity);
+      };
+      particle.force().add(particle.velocity().x() * -drag,
+                           particle.velocity().y() * -drag,
+                           particle.velocity().z() * -drag);
+    });
     springs.each(function (spring) {
       spring.apply();
     });
@@ -151,9 +151,9 @@ var ParticleSystem = function () {
   };
 
   that.clearForces = function () {
-    for (var i = 0; i < particles.length; i++) {
-      particles[i].force().clear();
-    };
+    particles.each(function (particle) {
+      particle.force().clear();
+    });
   };
 
   that.numberOfParticles = function () {
@@ -194,19 +194,19 @@ var ParticleSystem = function () {
 
   that.removeParticle = function (i) {
     var p = that.getParticle(i);
-    particles.remove(i);
+    particles.remove(i, i + 1);
     return p;
   };
 
   that.removeSpring = function (i) {
     var s = that.getSpring(i);
-    springs.remove(i);
+    springs.remove(i, i + 1);
     return s;
   };
 
   that.removeAttraction = function (i) {
     var a = that.getAttraction(i);
-    attractions.remove(i);
+    attractions.remove(i, i + 1);
     return a;
   };
 

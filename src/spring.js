@@ -1,6 +1,14 @@
-var Spring = function (springConstant, damping, restLength, a, b) {
+var Spring = function (a, b, springConstant, damping, restLength) {
   var that = {},
       on = true;
+
+  that.toString = function () {
+    return "a: " + a + 
+           "\nb: " + b + 
+           "\nspringConstant: " + springConstant +
+           "\ndamping: " + damping +
+           "\nrestLength: " + restLength;
+  };
 
   that.turnOff = function () {
     on = false;
@@ -64,7 +72,9 @@ var Spring = function (springConstant, damping, restLength, a, b) {
                                   Math.pow(a2bZ, 2));
 
       if (a2bDistance == 0) {
-        a2bX = a2bY = a2bZ = 0;
+        a2bX = 0;
+        a2bY = 0;
+        a2bZ = 0;
       } else {
         a2bX /= a2bDistance;
         a2bY /= a2bDistance;

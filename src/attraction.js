@@ -3,6 +3,13 @@ var Attraction = function (a, b, k, distanceMin) {
       on = true,
       distanceMinSquared = Math.pow(distanceMin, 2);
 
+  that.toString = function () {
+    return "a: " + a +
+           "\nb: " + b +
+           "\nk: " + k +
+           "\ndistanceMin " + distanceMin;
+  };
+
   that.setA = function (p) {
     a = p;
   };
@@ -45,23 +52,23 @@ var Attraction = function (a, b, k, distanceMin) {
       var a2bX = a.position().x() - b.position().x(),
           a2bY = a.position().y() - b.position().y(),
           a2bZ = a.position().z() - b.position().z(),
-          a2bDistanceSquared = Math.pow(a2bX, 2) + 
-                               Math.pow(a2bY, 2) + 
-                               Math.pow(a2bZ, 2);
-      
+          a2bDistanceSquared = a2bX*a2bX + a2bY*a2bY + a2bZ*a2bZ;
+
       if (a2bDistanceSquared < distanceMinSquared) {
         a2bDistanceSquared = distanceMinSquared;
       };
 
-      var force = k * a.mass * b.mass / a2bDistanceSquared,
+      var force = k * a.mass() * b.mass() / a2bDistanceSquared,
           length = Math.sqrt(a2bDistanceSquared);
 
-      // make unit vector, multiply by force
-      a2bX = a2bX / length * force;
-      a2bY = a2bY / length * force;
-      a2bZ = a2bZ / length * force;
-      
-      // apply
+      a2bX /= length;
+      a2bY /= length;
+      a2bZ /= length;
+
+      a2bX *= force;
+      a2bY *= force;
+      a2bZ *= force;
+
       if (a.isFree()) {
         a.force().add(-a2bX, -a2bY, -a2bZ);
       };

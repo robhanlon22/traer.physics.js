@@ -41,11 +41,11 @@ var Vector3D = function () {
     x = _x;
   };
 
-  that.setX = function (_y) {
+  that.setY = function (_y) {
     y = _y;
   };
 
-  that.setX = function (_z) {
+  that.setZ = function (_z) {
     z = _z;
   };
 
@@ -142,7 +142,9 @@ var Vector3D = function () {
   };
 
   that.clear = function () {
-    x = y = z = 0;
+    x = 0;
+    y = 0;
+    z = 0;
   };
 
   that.toString = function () {
