@@ -5,17 +5,6 @@ Array.prototype.remove = function(from, to) {
   return this.push.apply(this, rest);
 };
 
-// Quick 'n dirty each.
-if (Array.prototype.forEach) {
-  Array.prototype.each = Array.prototype.forEach;
-} else {
-  Array.prototype.each = function (callback) {
-    for (var i = 0; i < this.length; i++) {
-      callback(this[i]);
-    };
-  };
-};
-
 var ParticleSystem = function () {
   var that = {},
       integrator = new RungeKuttaIntegrator(that),
@@ -27,25 +16,26 @@ var ParticleSystem = function () {
       drag,
       hasDeadParticles = false,
       err = function (method) {
-        throw 'Invalid number of arguments to ' + method + ', bozo';
+        throw 'Invalid number of arguments to ' + method;
+      },
+      construct = function (args) { 
+        switch (args.length) {
+          case 2:
+            gravity.set(0, args[0], 0);
+            drag = args[1];
+            break;
+          case 4:
+            gravity.set(args[0], args[1], args[2]);
+            drag = args[3];
+            break;
+          case 0:
+            gravity.set(0, ParticleSystem.DEFAULT_GRAVITY, 0);
+            drag = ParticleSystem.DEFAULT_DRAG;
+            break;
+          default:
+            err('constructor');
+        };
       };
-
-  switch (arguments.length) {
-    case 2:
-      gravity.set(0, arguments[0], 0);
-      drag = arguments[1];
-      break;
-    case 4:
-      gravity.set(arguments[0], arguments[1], arguments[2]);
-      drag = arguments[3];
-      break;
-    case 0:
-      gravity.set(0, ParticleSystem.DEFAULT_GRAVITY, 0);
-      drag = ParticleSystem.DEFAULT_DRAG;
-      break;
-    default:
-      err('constructor');
-  };
 
   that.setIntegrator = function (integrator) {
     switch (integrator) {
@@ -131,29 +121,30 @@ var ParticleSystem = function () {
   };
 
   that.applyForces = function () {
-    particles.each(function (particle) {
+    for (var i = 0; i < particles.length; i++) {
+      var particle = particles[i];
       if (!gravity.isZero()) {
         particle.force().add(gravity);
       };
       particle.force().add(particle.velocity().x() * -drag,
                            particle.velocity().y() * -drag,
                            particle.velocity().z() * -drag);
-    });
-    springs.each(function (spring) {
-      spring.apply();
-    });
-    attractions.each(function (attraction) {
-      attraction.apply();
-    });
-    customForces.each(function (customForce) {
-      customForce.apply();
-    });
+    };
+    for (var i = 0; i < springs.length; i++) {
+      springs[i].apply();
+    };
+    for (var i = 0; i < attractions.length; i++) {
+      attractions[i].apply();
+    };
+    for (var i = 0; i < customForces.length; i++) {
+      customForces[i].apply();
+    };
   };
 
   that.clearForces = function () {
-    particles.each(function (particle) {
-      particle.force().clear();
-    });
+    for (var i = 0; i < particles.length; i++) {
+      particles[i].force().clear();
+    };
   };
 
   that.numberOfParticles = function () {
@@ -219,6 +210,8 @@ var ParticleSystem = function () {
   that.particles = function () {
     return particles;
   };
+
+  construct(arguments);
 
   return that;
 };

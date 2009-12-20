@@ -4,26 +4,27 @@ var Vector3D = function () {
       y = 0, 
       z = 0,
       err = function (method) {
-        throw 'Invalid number of arguments to ' + method + ', bozo';
+        throw 'Invalid number of arguments to ' + method;
+      },
+      construct = function (args) {
+        switch (args.length) {
+          case 0:
+            break;
+          case 1:
+            var p = args[0];
+            x = p.x();
+            y = p.y();
+            z = p.z();
+            break;
+          case 3:
+            x = args[0];
+            y = args[1];
+            z = args[2];
+            break;
+          default:
+            err('constructor');
+        };
       };
-
-  switch (arguments.length) {
-    case 0:
-      break;
-    case 1:
-      var p = arguments[0];
-      x = p.x();
-      y = p.y();
-      z = p.z();
-      break;
-    case 3:
-      x = arguments[0];
-      y = arguments[1];
-      z = arguments[2];
-      break;
-    default:
-      err('constructor');
-  };
 
   that.x = function () {
     return x;
@@ -37,16 +38,16 @@ var Vector3D = function () {
     return z;
   };
 
-  that.setX = function (_x) {
-    x = _x;
+  that.setX = function (newX) {
+    x = newX;
   };
 
-  that.setY = function (_y) {
-    y = _y;
+  that.setY = function (newY) {
+    y = newY;
   };
 
-  that.setZ = function (_z) {
-    z = _z;
+  that.setZ = function (newZ) {
+    z = newZ;
   };
 
   that.set = function () {
@@ -160,6 +161,12 @@ var Vector3D = function () {
   that.isZero = function () {
     return x == 0 && y == 0 && z == 0;
   };
+
+  that.copy = function () {
+    return new Vector3D(that);
+  };
+
+  construct(arguments);
 
   return that;
 };
