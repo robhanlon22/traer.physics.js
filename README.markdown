@@ -12,18 +12,18 @@ Building
 
 Simple, just run build.rb:
   
-  $ ruby build.rb
+    $ ruby build.rb
 
 Or, if you'd like a minified version, minified by [Closure Compiler][3]:
 
-  $ ruby build.rb --minify
+    $ ruby build.rb --minify
 
 That's it! You've now got a JavaScript version of Traer Physics that you
 can use for your own nefarious purposes.
 
-"Author ☺"
------------
-Rob Hanlon, aka @ohwillie
+Author
+------
+Rob Hanlon, aka @ohwillie. All original credit is due to Jeff Traer.
 
 [0]: http://www.cs.princeton.edu/~traer/physics/
 [1]: http://processing.org/
